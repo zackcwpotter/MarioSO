@@ -242,8 +242,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MagicMushroomPowerup
   type: 1
   spawned: 0
+  powerupCollected:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 11400000, guid: 6a5e88a574f44887a11ebf833f81d432, type: 2}
+        m_TargetAssemblyTypeName: PowerupGameEvent, Assembly-CSharp
+        m_MethodName: Raise
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   powerupSound: {fileID: 8300000, guid: 26301d2e86e99420599e315297a825df, type: 3}
-  speed: 3
+  speed: 1.5
   goRight: 1
 --- !u!1001 &609158408884368430
 PrefabInstance:
@@ -330,11 +345,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 2286781142691343828}
   m_SourcePrefab: {fileID: 100100000, guid: 2ba0069e334a4f640bb2518040a78899, type: 3}
---- !u!4 &3425032126179232397 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2881180928557219491, guid: 2ba0069e334a4f640bb2518040a78899, type: 3}
-  m_PrefabInstance: {fileID: 609158408884368430}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &4703266310686552427 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5274121510673843525, guid: 2ba0069e334a4f640bb2518040a78899, type: 3}
@@ -352,6 +362,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b633161221293a4f98326ec66e84607, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MushroomCollisionRelay
+--- !u!4 &3425032126179232397 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2881180928557219491, guid: 2ba0069e334a4f640bb2518040a78899, type: 3}
+  m_PrefabInstance: {fileID: 609158408884368430}
+  m_PrefabAsset: {fileID: 0}
 --- !u!95 &5942907766399711006 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 6488941010047238960, guid: 2ba0069e334a4f640bb2518040a78899, type: 3}

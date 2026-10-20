@@ -12,7 +12,8 @@ GameObject:
   - component: {fileID: 8797222182695812237}
   - component: {fileID: 8325816299616058073}
   - component: {fileID: 2889768206270376774}
-  - component: {fileID: 1193303918272811402}
+  - component: {fileID: 5328195170491416919}
+  - component: {fileID: -8111268903697239412}
   m_Layer: 0
   m_Name: question
   m_TagString: Untagged
@@ -237,7 +238,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &1193303918272811402
+--- !u!114 &5328195170491416919
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -249,5 +250,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 913e2ffaa56f60347846363a6cc1cbb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::QuestionBoxPowerupController
+  isInvisible: 0
   powerupAnimator: {fileID: 0}
   powerup: {fileID: 0}
+  coinSound: {fileID: 0}
+--- !u!114 &-8111268903697239412
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 289849236102379913}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228d6a4e124d74445941f59b2a1a7ea7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SimpleGameEventListener
+  Event: {fileID: 11400000, guid: 3b7c5909d5754d5ea57a97cc04a2570c, type: 2}
+  Response:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 5328195170491416919}
+        m_TargetAssemblyTypeName: QuestionBoxPowerupController, Assembly-CSharp
+        m_MethodName: GameRestart
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2

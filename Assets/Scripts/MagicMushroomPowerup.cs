@@ -1,9 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class MagicMushroomPowerup : BasePowerup
 {
+    [Header("Events")]
+    public UnityEvent<IPowerup> powerupCollected;
+
     [Header("Audio")]
     public AudioClip powerupSound; // Drag smb_powerup.wav here in Inspector
 
@@ -46,12 +50,31 @@ public class MagicMushroomPowerup : BasePowerup
         sr = GetComponentInChildren<SpriteRenderer>(true);
 
         Transform child = transform.Find("MagicMushroom");
+        if (child == null && transform.childCount > 0)
+        {
+            child = transform.GetChild(0);
+        }
+
         if (child != null)
         {
             childTransform = child;
             // Prefer child's components if present, otherwise fallback to parent
             activeRb = child.GetComponent<Rigidbody2D>() ?? GetComponent<Rigidbody2D>();
             activeCol = child.GetComponent<Collider2D>() ?? GetComponent<Collider2D>();
+
+            // Ensure child forwards its collisions and triggers to this parent script
+            var relay = child.GetComponent<MushroomCollisionRelay>();
+            if (relay == null)
+            {
+                relay = child.gameObject.AddComponent<MushroomCollisionRelay>();
+            }
+
+            var forwarder = child.GetComponent<MagicMushroomCollisionForwarder>();
+            if (forwarder == null)
+            {
+                forwarder = child.gameObject.AddComponent<MagicMushroomCollisionForwarder>();
+            }
+            forwarder.target = this;
         }
         else
         {
@@ -102,33 +125,43 @@ public class MagicMushroomPowerup : BasePowerup
         HandleCollision(col);
     }
 
+    void OnCollisionStay2D(Collision2D col)
+    {
+        HandleCollision(col);
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        HandleTrigger(other);
+    }
+
+    void OnTriggerStay2D(Collider2D other)
+    {
+        HandleTrigger(other);
+    }
+
     public void OnCustomCollisionEnter2D(Collision2D col)
     {
         HandleCollision(col);
     }
 
-    private void HandleCollision(Collision2D col)
+    public void HandleTrigger(Collider2D other)
+    {
+        if (!spawned) return;
+        if (other.CompareTag("Player") || other.GetComponentInParent<PlayerController>() != null)
+        {
+            ConsumeByPlayer(other.gameObject);
+        }
+    }
+
+    public void HandleCollision(Collision2D col)
     {
         if (!spawned) return;
 
         // 1. Mario consumes the mushroom
-        if (col.gameObject.CompareTag("Player"))
+        if (col.gameObject.CompareTag("Player") || col.gameObject.GetComponentInParent<PlayerController>() != null || (col.collider != null && col.collider.CompareTag("Player")))
         {
-            PlayerMovement player = col.gameObject.GetComponent<PlayerMovement>();
-            if (player != null && player.marioAudio != null)
-            {
-                if (powerupSound != null)
-                {
-                    player.marioAudio.PlayOneShot(powerupSound);
-                }
-                else
-                {
-                    Debug.LogWarning("[MagicMushroomPowerup] powerupSound is not assigned in the Inspector!");
-                }
-            }
-
-            ApplyPowerup(this);
-            gameObject.SetActive(false); // Hide / consume
+            ConsumeByPlayer(col.gameObject);
         }
         // 2. Flip direction when hitting Pipe (layer 10) or a vertical obstacle (layer 8 wall)
         // Checking contacts[0].normal.x ensures it flips ONLY on walls, NEVER on the floor/box top!
@@ -139,6 +172,37 @@ public class MagicMushroomPowerup : BasePowerup
             {
                 activeRb.linearVelocity = new Vector2((goRight ? 1f : -1f) * speed, activeRb.linearVelocity.y);
             }
+        }
+    }
+
+    private void ConsumeByPlayer(GameObject playerObj)
+    {
+        PlayerController player = playerObj.GetComponent<PlayerController>() ?? playerObj.GetComponentInParent<PlayerController>();
+        if (player != null && player.marioAudio != null)
+        {
+            if (powerupSound != null)
+            {
+                player.marioAudio.PlayOneShot(powerupSound);
+            }
+            else
+            {
+                Debug.LogWarning("[MagicMushroomPowerup] powerupSound is not assigned in the Inspector!");
+            }
+        }
+
+        // Broadcast powerup collected event (ScriptableObject architecture)
+        powerupCollected.Invoke(this);
+
+        if (player != null)
+        {
+            ApplyPowerup(player);
+        }
+
+        // Hide and consume mushroom
+        gameObject.SetActive(false);
+        if (childTransform != null)
+        {
+            childTransform.gameObject.SetActive(false);
         }
     }
 
@@ -185,6 +249,10 @@ public class MagicMushroomPowerup : BasePowerup
 
     public override void ApplyPowerup(MonoBehaviour i)
     {
+        if (i is PlayerController player)
+        {
+            player.MakeSuperMario();
+        }
         Debug.Log("Magic Mushroom consumed by Mario!");
     }
 
@@ -201,6 +269,7 @@ public class MagicMushroomPowerup : BasePowerup
         transform.localPosition = startLocalPos;
         if (childTransform != null)
         {
+            childTransform.gameObject.SetActive(true);
             childTransform.localPosition = childStartLocalPos;
         }
         gameObject.SetActive(true);
@@ -213,5 +282,30 @@ public class MagicMushroomPowerup : BasePowerup
             anim.Rebind();
             anim.Play("mushroom_idle");
         }
+    }
+}
+
+public class MagicMushroomCollisionForwarder : MonoBehaviour
+{
+    public MagicMushroomPowerup target;
+
+    void OnCollisionEnter2D(Collision2D col)
+    {
+        if (target != null) target.HandleCollision(col);
+    }
+
+    void OnCollisionStay2D(Collision2D col)
+    {
+        if (target != null) target.HandleCollision(col);
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (target != null) target.HandleTrigger(other);
+    }
+
+    void OnTriggerStay2D(Collider2D other)
+    {
+        if (target != null) target.HandleTrigger(other);
     }
 }

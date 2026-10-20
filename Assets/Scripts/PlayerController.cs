@@ -1,39 +1,36 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
-
-public class PlayerMovement : MonoBehaviour
+public class PlayerController : MonoBehaviour, IPowerupApplicable
 {
+    // Inspector Variables
     public GameConstants gameConstants;
+    public Transform gameCamera;
+    public Animator marioAnimator;
+    public AudioSource marioAudio;
+    public AudioSource marioDeathAudio;
+
+    // UnityEvents to hook up to ScriptableObject Game Events in the Inspector
+    public UnityEvent onGameOver;
+    public UnityEvent onPlayerDeath;
 
     private float speed;
     private float maxSpeed;
     private float upSpeed;
     private bool moving = false;
-
     int collisionLayerMask = (1 << 6) | (1 << 7) | (1 << 8);
-
-    // for animation
-    public Animator marioAnimator;
-
     private Rigidbody2D marioBody;
-    private bool onGroundState = true; 
+    private bool onGroundState = true;
     private SpriteRenderer marioSprite;
     private bool faceRightState = true;
     private Vector3 startPosition;
     private bool jumpedState = false;
-
-    //To reset camera
-    public Transform gameCamera;
     
-    // for audio
-    public AudioSource marioAudio;
-
-    public AudioSource marioDeathAudio;
+    [HideInInspector]
     public float deathImpulse;
 
-    // state
     [System.NonSerialized]
     public bool alive = true;
 
@@ -49,53 +46,36 @@ public class PlayerMovement : MonoBehaviour
         marioSprite = GetComponent<SpriteRenderer>();
         startPosition = transform.position;
 
-        // update animator state
         marioAnimator.SetBool("onGround", onGroundState);
-
-        GameManager.instance.gameRestart.AddListener(GameRestart);
-
     }
 
     void Update()
     {
         if (alive)
-        {
             marioAnimator.SetFloat("xSpeed", Mathf.Abs(marioBody.linearVelocity.x));
-        }
     }
 
     void FlipMarioSprite(int value)
     {
-        if (!alive)
-            return;
-
-        if (Time.timeScale == 0f)
-            return;
+        if (!alive || Time.timeScale == 0f) return;
 
         if (value == -1 && faceRightState)
         {
             faceRightState = false;
             marioSprite.flipX = true;
-
-            if (marioBody.linearVelocity.x > 0.05f)
-                marioAnimator.SetTrigger("onSkid");
+            if (marioBody.linearVelocity.x > 0.05f) marioAnimator.SetTrigger("onSkid");
         }
         else if (value == 1 && !faceRightState)
         {
             faceRightState = true;
             marioSprite.flipX = false;
-
-            if (marioBody.linearVelocity.x < -0.05f)
-                marioAnimator.SetTrigger("onSkid");
+            if (marioBody.linearVelocity.x < -0.05f) marioAnimator.SetTrigger("onSkid");
         }
     }
 
     void FixedUpdate()
     {
-        if (alive && moving)
-        {
-            Move(faceRightState == true ? 1 : -1);
-        }
+        if (alive && moving) Move(faceRightState == true ? 1 : -1);
     }
 
     void OnCollisionEnter2D(Collision2D col)
@@ -109,32 +89,25 @@ public class PlayerMovement : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (!other.CompareTag("Enemy") || !alive)
-            return;
+        // We can leave this empty or use it for other triggers, 
+        // because the Goomba now handles detecting the hit and triggering DamageMario!
+    }
 
-        bool marioIsAbove =
-            transform.position.y > other.transform.position.y + 0.3f;
+    // ADDED: This public method allows the SimpleGameEventListener to tell Mario to die
+    public void DamageMario()
+    {
+        if (!alive) return;
 
-        bool marioIsFalling =
-            marioBody.linearVelocity.y < 0;
-
-        // Mario lands on top of Goomba
-        if (marioIsAbove && marioIsFalling)
-        {
-            Debug.Log("Mario stomped Goomba!");
-            return;
-        }
-
-        // Mario hits Goomba from the side
-        Debug.Log("Collided with goomba!");
-
+        // Disable collider so he falls through the map
         GetComponent<Collider2D>().enabled = false;
-
+        
+        // Play death animation and sound
         marioAnimator.Play("mario-die");
         marioDeathAudio.Play();
-
         alive = false;
-        GameManager.instance.playerDeath.Invoke();
+
+        // Trigger the UnityEvent to raise the Player Death ScriptableObject Event
+        onPlayerDeath.Invoke();
     }
 
     void PlayDeathImpulse()
@@ -144,30 +117,23 @@ public class PlayerMovement : MonoBehaviour
 
     void GameOverScene()
     {
-        GameManager.instance.GameOver();
+        // Trigger the UnityEvent to raise the Game Over ScriptableObject Event
+        onGameOver.Invoke();
     }
 
     void PlayJumpSound()
     {
-        if (marioBody.linearVelocity.y > 0.1f)
-        {
-            marioAudio.PlayOneShot(marioAudio.clip);
-        }
+        if (marioBody.linearVelocity.y > 0.1f) marioAudio.PlayOneShot(marioAudio.clip);
     }
 
     public void Jump()
     {
-        if (Time.timeScale == 0f)
-            return;
-
+        if (Time.timeScale == 0f) return;
         if (alive && onGroundState)
         {
-            // jump
             marioBody.AddForce(Vector2.up * upSpeed, ForceMode2D.Impulse);
             onGroundState = false;
             jumpedState = true;
-
-            // update animator state
             marioAnimator.SetBool("onGround", onGroundState);
         }
     }
@@ -176,7 +142,6 @@ public class PlayerMovement : MonoBehaviour
     {
         if (alive && jumpedState)
         {
-            // jump higher
             marioBody.AddForce(Vector2.up * upSpeed * 30, ForceMode2D.Force);
             jumpedState = false;
         }
@@ -185,20 +150,12 @@ public class PlayerMovement : MonoBehaviour
     void Move(int value)
     {
         Vector2 movement = new Vector2(value, 0);
-
-        // check if it doesn't go beyond maxSpeed
-        if (marioBody.linearVelocity.magnitude < maxSpeed)
-            marioBody.AddForce(movement * speed);
+        if (marioBody.linearVelocity.magnitude < maxSpeed) marioBody.AddForce(movement * speed);
     }
 
     public void MoveCheck(int value)
     {
-        Debug.Log($"MoveCheck called with value: {value}");
-
-        if (value == 0)
-        {
-            moving = false;
-        }
+        if (value == 0) moving = false;
         else
         {
             FlipMarioSprite(value);
@@ -209,35 +166,45 @@ public class PlayerMovement : MonoBehaviour
 
     public void GameRestart()
     {
-        // re-enable collider
         GetComponent<Collider2D>().enabled = true;
-
-        // reset position and stop any leftover death velocity
         marioBody.transform.position = startPosition;
         marioBody.linearVelocity = Vector2.zero;
-
-        // reset sprite direction
         faceRightState = true;
         marioSprite.flipX = false;
-
-        // reset animation: jump straight to idle instead of waiting for the
-        // mario-die -> idle transition (it has exit time, so it can get stuck)
         marioAnimator.Play("mario-idle", 0, 0f);
         onGroundState = true;
         jumpedState = false;
         moving = false;
         marioAnimator.SetBool("onGround", true);
         alive = true;
-
-        // reset camera position
-        gameCamera.position = new Vector3(0.47f, 1f, -36.1f);
+        transform.localScale = Vector3.one;
     }
 
-    void OnDestroy()
-    {
-        if (GameManager.instance == null)
-            return;
+    // --- POWERUP INTERFACE IMPLEMENTATION ---
 
-        GameManager.instance.gameRestart.RemoveListener(GameRestart);
+    public void RequestPowerupEffect(IPowerup i)
+    {
+        // Passes Mario (this) back to the powerup script so it can apply its effect
+        i.ApplyPowerup(this);
+    }
+
+    public void MakeSuperMario()
+    {
+        Debug.Log("Mario is now Super Mario!");
+        StopCoroutine("ScaleMario");
+        StartCoroutine(ScaleMario(new Vector3(1.4f, 1.4f, 1f), 0.2f));
+    }
+
+    private IEnumerator ScaleMario(Vector3 targetScale, float duration)
+    {
+        Vector3 initial = transform.localScale;
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            transform.localScale = Vector3.Lerp(initial, targetScale, elapsed / duration);
+            yield return null;
+        }
+        transform.localScale = targetScale;
     }
 }

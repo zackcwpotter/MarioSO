@@ -7,9 +7,9 @@ public class NextScene : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") || other.GetComponentInParent<PlayerController>() != null)
         {
-            Debug.Log("Change scene!");
+            Debug.Log("Change scene to: " + nextSceneName);
             SceneManager.LoadSceneAsync(nextSceneName, LoadSceneMode.Single);
         }
     }

@@ -1,24 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events; // Required for UnityEvents
 
 public class EnemyManager : MonoBehaviour
 {
-    private GameManager gameManager;
+    // ADDED: Replaces the GameManager reference for increasing the score
+    public UnityEvent<int> increaseScore;
 
     void Start()
     {
-        gameManager = GameManager.instance;
-        gameManager.gameRestart.AddListener(GameRestart);
-
         // Subscribe to each Goomba's stomp event
         foreach (Transform child in transform)
         {
-            EnemyMovement enemy = child.GetComponent<EnemyMovement>();
+            EnemyController enemy = child.GetComponent<EnemyController>();
 
             if (enemy != null)
             {
-                enemy.OnGoombaStomp += HandleGoombaStomp;
+                // You can safely uncomment this whenever you are ready
+                // enemy.OnGoombaStomp += HandleGoombaStomp;
             }
         }
     }
@@ -27,14 +27,15 @@ public class EnemyManager : MonoBehaviour
     {
         Debug.Log("EnemyManager received stomp event");
 
-        gameManager.IncreaseScore(1);
+        // CHANGED: Broadcasts the score increase to the Event System
+        increaseScore.Invoke(1);
     }
 
     public void GameRestart()
     {
         foreach (Transform child in transform)
         {
-            EnemyMovement enemy = child.GetComponent<EnemyMovement>();
+            EnemyController enemy = child.GetComponent<EnemyController>();
 
             if (enemy != null)
             {
@@ -42,12 +43,6 @@ public class EnemyManager : MonoBehaviour
             }
         }
     }
-
-    void OnDestroy()
-    {
-        if (gameManager != null)
-        {
-            gameManager.gameRestart.RemoveListener(GameRestart);
-        }
-    }
+    
+    // DELETED: OnDestroy() is no longer needed since we aren't listening to the old GameManager
 }

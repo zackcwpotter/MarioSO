@@ -7,43 +7,43 @@ public class CameraController : MonoBehaviour
     public Transform player;   // Mario's Transform
     public Transform endLimit; // Marks the right end of the level
 
-    private float offset;            // Initial x-offset between camera and Mario
-    private float startX;            // Leftmost camera position
-    private float endX;              // Rightmost camera position
-    private float viewportHalfWidth; // Half of the camera's visible width
+    private float offset;            
+    private float startX;            
+    private float endX;              
+    private float viewportHalfWidth; 
+    
+    // Added to remember the starting position for the restart event
+    private Vector3 startPosition; 
 
     void Start()
     {
+        // The tutorial keeps this standard way of finding the player
         player = GameObject.FindGameObjectWithTag("Player").transform;
         
-        // Calculate half of the camera's visible width
         viewportHalfWidth = Camera.main.orthographicSize * Camera.main.aspect;
-
-        // Keep the initial distance between Mario and the camera
         offset = transform.position.x - player.position.x;
-
-        // Camera cannot move further left than its starting position
         startX = transform.position.x;
-
-        // Camera stops before showing anything beyond EndLimit
         endX = endLimit.position.x - viewportHalfWidth;
-
         
+        // Save the initial position when the game starts
+        startPosition = transform.position; 
     }
 
     void Update()
     {
-        // Calculate where the camera should be based on Mario's position
         float desiredX = player.position.x + offset;
-
-        // Keep the camera between the start and end of the level
         float clampedX = Mathf.Clamp(desiredX, startX, endX);
 
-        // Follow Mario only on the x-axis
         transform.position = new Vector3(
             clampedX,
             transform.position.y,
             transform.position.z
         );
+    }
+
+    // This is the public method the tutorial requires for the event listener
+    public void GameRestart()
+    {
+        transform.position = startPosition;
     }
 }

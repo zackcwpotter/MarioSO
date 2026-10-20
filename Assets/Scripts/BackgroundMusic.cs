@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(AudioSource))]
 public class BackgroundMusic : MonoBehaviour
@@ -8,19 +9,12 @@ public class BackgroundMusic : MonoBehaviour
     void Start()
     {
         music = GetComponent<AudioSource>();
-        GameManager.instance.gameRestart.AddListener(RestartMusic);
     }
 
-    // play the background music from the beginning on restart
+    // Play the background music from the beginning on restart
     public void RestartMusic()
     {
         music.Stop();
         music.Play();
-    }
-
-    void OnDestroy()
-    {
-        if (GameManager.instance != null)
-            GameManager.instance.gameRestart.RemoveListener(RestartMusic);
     }
 }

@@ -242,6 +242,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CoinPowerup
   type: 0
   spawned: 0
+  powerupCollected:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1001 &4541776583690165927
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -344,6 +347,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CoinPowerup
   type: 0
   spawned: 0
+  powerupCollected:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 11400000, guid: 6a5e88a574f44887a11ebf833f81d432, type: 2}
+        m_TargetAssemblyTypeName: PowerupGameEvent, Assembly-CSharp
+        m_MethodName: Raise
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1001 &7851968291755510448
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -359,6 +377,34 @@ PrefabInstance:
     - target: {fileID: -8427764734437423028, guid: fcbc9f73a74e12e4080681510fe44453, type: 3}
       propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8111268903697239412, guid: fcbc9f73a74e12e4080681510fe44453, type: 3}
+      propertyPath: Response.m_PersistentCalls.m_Calls.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -8111268903697239412, guid: fcbc9f73a74e12e4080681510fe44453, type: 3}
+      propertyPath: Response.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8111268903697239412, guid: fcbc9f73a74e12e4080681510fe44453, type: 3}
+      propertyPath: Response.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 4196014708715462140}
+    - target: {fileID: -8111268903697239412, guid: fcbc9f73a74e12e4080681510fe44453, type: 3}
+      propertyPath: Response.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -8111268903697239412, guid: fcbc9f73a74e12e4080681510fe44453, type: 3}
+      propertyPath: Response.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: GameRestart
+      objectReference: {fileID: 0}
+    - target: {fileID: -8111268903697239412, guid: fcbc9f73a74e12e4080681510fe44453, type: 3}
+      propertyPath: Response.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: CoinPowerup, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: -8111268903697239412, guid: fcbc9f73a74e12e4080681510fe44453, type: 3}
+      propertyPath: Response.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 289849236102379913, guid: fcbc9f73a74e12e4080681510fe44453, type: 3}
       propertyPath: m_Name
@@ -444,6 +490,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5328195170491416919, guid: fcbc9f73a74e12e4080681510fe44453, type: 3}
+      propertyPath: powerup
+      value: 
+      objectReference: {fileID: 4196014708715462140}
+    - target: {fileID: 5328195170491416919, guid: fcbc9f73a74e12e4080681510fe44453, type: 3}
+      propertyPath: coinSound
+      value: 
+      objectReference: {fileID: 8300000, guid: d885ffc842af744d89f7d595ffcc176a, type: 3}
+    - target: {fileID: 5328195170491416919, guid: fcbc9f73a74e12e4080681510fe44453, type: 3}
+      propertyPath: powerupAnimator
+      value: 
+      objectReference: {fileID: 2814615286858821252}
     - target: {fileID: 8325816299616058073, guid: fcbc9f73a74e12e4080681510fe44453, type: 3}
       propertyPath: m_Size.x
       value: 0.9054892

@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 9162969196694868173}
   - component: {fileID: 3224557986662375973}
   - component: {fileID: 4258904250927689322}
+  - component: {fileID: 1385920194827103951}
   m_Layer: 8
   m_Name: 'top_brick '
   m_TagString: Untagged
@@ -282,9 +283,38 @@ MonoBehaviour:
   powerup: {fileID: 2296063287352165617}
   powerupAnimator: {fileID: 7029551781211434221}
   coinSound: {fileID: 8300000, guid: d885ffc842af744d89f7d595ffcc176a, type: 3}
+  bumpSound: {fileID: 8300000, guid: 6f487163c53194893952b1f457060b86, type: 3}
   breakable: 0
   bounceHeight: 0.3
   bounceDuration: 0.15
+--- !u!114 &1385920194827103951
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5561935661274499925}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228d6a4e124d74445941f59b2a1a7ea7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SimpleGameEventListener
+  Event: {fileID: 11400000, guid: 3b7c5909d5754d5ea57a97cc04a2570c, type: 2}
+  Response:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4258904250927689322}
+        m_TargetAssemblyTypeName: BrickPowerupController, Assembly-CSharp
+        m_MethodName: GameRestart
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1001 &8756642632542903502
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -350,20 +380,14 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8e56920a37b25ba47bd26be5e1ccabe4, type: 3}
---- !u!114 &2296063287352165617 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7374813102337153087, guid: 8e56920a37b25ba47bd26be5e1ccabe4, type: 3}
-  m_PrefabInstance: {fileID: 8756642632542903502}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a9693eb4fb7a3d74e911f56bd8a90d61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CoinPowerup
 --- !u!4 &6234092822597712345 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3388442430612006167, guid: 8e56920a37b25ba47bd26be5e1ccabe4, type: 3}
+  m_PrefabInstance: {fileID: 8756642632542903502}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2296063287352165617 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7374813102337153087, guid: 8e56920a37b25ba47bd26be5e1ccabe4, type: 3}
   m_PrefabInstance: {fileID: 8756642632542903502}
   m_PrefabAsset: {fileID: 0}
 --- !u!95 &7029551781211434221 stripped
@@ -371,3 +395,4 @@ Animator:
   m_CorrespondingSourceObject: {fileID: 1731673697939402787, guid: 8e56920a37b25ba47bd26be5e1ccabe4, type: 3}
   m_PrefabInstance: {fileID: 8756642632542903502}
   m_PrefabAsset: {fileID: 0}
+

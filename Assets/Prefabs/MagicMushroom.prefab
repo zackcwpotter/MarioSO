@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 6212469779472763895}
   - component: {fileID: 2954218992406208607}
   - component: {fileID: 1175283427553513089}
-  - component: {fileID: 4207292676496033326}
   - component: {fileID: 6488941010047238960}
   m_Layer: 9
   m_Name: MagicMushroom
@@ -168,20 +167,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1.0625, y: 1.125}
   m_EdgeRadius: 0
---- !u!114 &4207292676496033326
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5274121510673843525}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6c371c65898f4a1418e6c15529de0708, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MagicMushroomPowerup
-  type: 1
-  spawned: 0
 --- !u!95 &6488941010047238960
 Animator:
   serializedVersion: 7

@@ -1,8 +1,12 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 public class CoinPowerup : BasePowerup
 {
     private Vector3 startPosition;
+
+    // Broadcast that this powerup was collected, passing itself as IPowerup
+    public UnityEvent<IPowerup> powerupCollected;
 
     protected override void Start()
     {
@@ -15,14 +19,16 @@ public class CoinPowerup : BasePowerup
     {
         if (spawned) return;
         spawned = true;
-        ApplyPowerup(this);
+        
+        // CHANGED: Broadcast that this powerup was collected, passing itself
+        powerupCollected.Invoke(this);
     }
 
     public override void ApplyPowerup(MonoBehaviour i)
     {
-        if (GameManager.instance != null)
+        if (i is GameManager gm)
         {
-            GameManager.instance.IncreaseScore(1);
+            gm.IncreaseScore(1);
         }
     }
 
@@ -33,7 +39,7 @@ public class CoinPowerup : BasePowerup
     }
 
     // 2. Called on restart
-    public void ResetPowerup()
+    public void GameRestart()
     {
         spawned = false;
         transform.localPosition = startPosition;

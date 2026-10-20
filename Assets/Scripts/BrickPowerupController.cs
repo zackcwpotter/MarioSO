@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class BrickPowerupController : MonoBehaviour, IPowerupController
 {
@@ -8,6 +9,7 @@ public class BrickPowerupController : MonoBehaviour, IPowerupController
     public BasePowerup powerup;
     public Animator powerupAnimator;
     public AudioClip coinSound;
+    public AudioClip bumpSound;
 
     [Header("Brick Settings")]
     public bool breakable = false;
@@ -60,21 +62,11 @@ public class BrickPowerupController : MonoBehaviour, IPowerupController
         {
             powerup.gameObject.SetActive(false);
         }
-
-        // Subscribe to game restart event
-        if (GameManager.instance != null)
-        {
-            GameManager.instance.gameRestart.AddListener(ResetBrick);
-        }
     }
 
-    void OnDestroy()
+    public void GameRestart()
     {
-        // Unsubscribe to prevent memory leaks
-        if (GameManager.instance != null)
-        {
-            GameManager.instance.gameRestart.RemoveListener(ResetBrick);
-        }
+        ResetBrick();
     }
 
     public void ResetBrick()
@@ -106,7 +98,7 @@ public class BrickPowerupController : MonoBehaviour, IPowerupController
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (!collision.gameObject.CompareTag("Player"))
+        if (!collision.gameObject.CompareTag("Player") && collision.gameObject.GetComponentInParent<PlayerController>() == null)
             return;
 
         // Only trigger when Mario hits from below
@@ -128,6 +120,15 @@ public class BrickPowerupController : MonoBehaviour, IPowerupController
 
                     // Play chime (uses coinSound or falls back to AudioSource's clip)
                     AudioClip clipToPlay = coinSound != null ? coinSound : (audioSource != null ? audioSource.clip : null);
+                    if (clipToPlay != null && audioSource != null)
+                    {
+                        audioSource.PlayOneShot(clipToPlay);
+                    }
+                }
+                else
+                {
+                    // Play bump sound when hit without coin or already spawned
+                    AudioClip clipToPlay = bumpSound != null ? bumpSound : (audioSource != null ? audioSource.clip : null);
                     if (clipToPlay != null && audioSource != null)
                     {
                         audioSource.PlayOneShot(clipToPlay);

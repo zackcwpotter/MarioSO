@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(AudioSource))]
 [RequireComponent(typeof(QuestionBoxPowerupController))]
@@ -38,9 +39,6 @@ public class QuestionBox : MonoBehaviour
             mushroomBody = mushroom.GetComponent<Rigidbody2D>();
             mushroom.gameObject.SetActive(false);
         }
-
-        if (GameManager.instance != null)
-            GameManager.instance.gameRestart.AddListener(ResetBox);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -190,12 +188,6 @@ public class QuestionBox : MonoBehaviour
                 mushroomBody.linearVelocity = Vector2.zero;
                 mushroomBody.angularVelocity = 0f;
             }
-        }
     }
-
-    void OnDestroy()
-    {
-        if (GameManager.instance != null)
-            GameManager.instance.gameRestart.RemoveListener(ResetBox);
-    }
+}
 }

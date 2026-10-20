@@ -1,11 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class JumpOverGoomba : MonoBehaviour
 {
-    // Expose GameManager in the inspector instead of using FindGameObjectWithTag
-    public GameManager gameManager;
+    public UnityEvent<int> increaseScore;
 
     public Transform enemyLocation;
     private bool onGroundState;
@@ -38,7 +38,7 @@ public class JumpOverGoomba : MonoBehaviour
             if (Mathf.Abs(transform.position.x - enemyLocation.position.x) < 0.5f)
             {
                 countScoreState = false;
-                gameManager.IncreaseScore(1);
+                increaseScore.Invoke(1);
             }
         }
     }

@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Events; // ADDED: Required for UnityEvents
 
 [RequireComponent(typeof(AudioSource))]
 public class Brick : MonoBehaviour
@@ -11,26 +12,26 @@ public class Brick : MonoBehaviour
     public float bounceHeight = 0.3f;
     public float bounceDuration = 0.15f;
 
+    // ADDED: Replaces the old GameManager score increase
+    public UnityEvent<int> increaseScore;
+
     private Vector3 startPosition;
     private bool isUsed = false;
     private bool isBouncing = false;
-    private AudioSource audioSource; // Added AudioSource reference
+    private AudioSource audioSource; 
 
     void Start()
     {
         startPosition = transform.localPosition;
-        audioSource = GetComponent<AudioSource>(); // Get the component
+        audioSource = GetComponent<AudioSource>(); 
         
         if (coin != null) 
         {
             coin.SetActive(false);
         }
 
-        GameManager gm = Object.FindFirstObjectByType<GameManager>();
-        if (gm != null)
-        {
-            gm.gameRestart.AddListener(ResetBrick);
-        }
+        // DELETED: GameManager.instance.gameRestart.AddListener(ResetBrick);
+        // We will now use a SimpleGameEventListener in the Inspector instead!
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -40,6 +41,7 @@ public class Brick : MonoBehaviour
 
         foreach (ContactPoint2D contact in collision.contacts)
         {
+            // Make sure Mario is hitting it from below
             if (contact.normal.y > 0.5f && !isUsed && !isBouncing)
             {
                 isUsed = true;
@@ -57,7 +59,6 @@ public class Brick : MonoBehaviour
 
     private IEnumerator Bounce()
     {
-        // ... (Keep your existing Bounce Coroutine exact logic here)
         isBouncing = true;
         Vector3 topPosition = startPosition + Vector3.up * bounceHeight;
 
@@ -83,11 +84,13 @@ public class Brick : MonoBehaviour
 
     private void SpawnCoin()
     {
-        // Replaced PlayClipAtPoint with the routable AudioSource
         if (coinSound != null)
         {
             audioSource.PlayOneShot(coinSound);
         }
+
+        // ADDED: Broadcast the score increase to the Event System!
+        increaseScore.Invoke(1);
 
         if (coin != null)
         {
@@ -98,7 +101,6 @@ public class Brick : MonoBehaviour
 
     private IEnumerator MoveCoin(GameObject coinObj)
     {
-        // ... (Keep your existing MoveCoin Coroutine exact logic here)
         Vector3 startCoinPos = coinObj.transform.position;
         Vector3 topPosition = startCoinPos + Vector3.up * 1.5f;
 
@@ -123,6 +125,7 @@ public class Brick : MonoBehaviour
         coinObj.SetActive(false);
     }
 
+    // Must be public so the SimpleGameEventListener can trigger it
     public void ResetBrick()
     {
         isUsed = false;

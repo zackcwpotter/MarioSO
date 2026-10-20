@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class QuestionBoxPowerupController : MonoBehaviour, IPowerupController
 {
+    // Matches the "Is Invisible" slot in your screenshot
+    public bool isInvisible; 
     public Animator powerupAnimator;
     public BasePowerup powerup;
     public AudioClip coinSound;
@@ -20,7 +22,6 @@ public class QuestionBoxPowerupController : MonoBehaviour, IPowerupController
 
     private void EnsureLocalReferences()
     {
-        // 1. Locate the local powerupAnimator first
         if (powerupAnimator == null || !powerupAnimator.gameObject.scene.IsValid())
         {
             if (transform.parent != null)
@@ -28,7 +29,7 @@ public class QuestionBoxPowerupController : MonoBehaviour, IPowerupController
                 Animator[] anims = transform.parent.GetComponentsInChildren<Animator>(true);
                 foreach (var a in anims)
                 {
-                    if (a.gameObject != this.gameObject) // Don't pick the question box's own animator
+                    if (a.gameObject != this.gameObject) 
                     {
                         powerupAnimator = a;
                         break;
@@ -37,8 +38,6 @@ public class QuestionBoxPowerupController : MonoBehaviour, IPowerupController
             }
         }
 
-        // 2. If the powerupAnimator GameObject has a BasePowerup (like CoinPowerup on child 'coin'),
-        // bind to that exact component! This guarantees the controller and the animator event share the SAME instance!
         if (powerupAnimator != null)
         {
             BasePowerup animPowerup = powerupAnimator.GetComponent<BasePowerup>();
@@ -48,7 +47,6 @@ public class QuestionBoxPowerupController : MonoBehaviour, IPowerupController
             }
         }
 
-        // 3. Fallback for mushroom boxes (where MagicMushroomPowerup is on parent Powerup)
         if (powerup == null || !powerup.gameObject.scene.IsValid())
         {
             if (transform.parent != null)
@@ -61,7 +59,6 @@ public class QuestionBoxPowerupController : MonoBehaviour, IPowerupController
             }
         }
 
-        // Disable any duplicate CoinPowerup on the parent object to prevent double scoring
         if (powerup != null && transform.parent != null)
         {
             CoinPowerup[] allCoins = transform.parent.GetComponentsInChildren<CoinPowerup>(true);
@@ -87,7 +84,6 @@ public class QuestionBoxPowerupController : MonoBehaviour, IPowerupController
             originalBodyType = rb.bodyType;
         }
 
-        // Store original local positions
         if (powerup != null)
         {
             powerupLocalPos = powerup.transform.localPosition;
@@ -95,29 +91,19 @@ public class QuestionBoxPowerupController : MonoBehaviour, IPowerupController
         if (powerupAnimator != null)
         {
             animatorLocalPos = powerupAnimator.transform.localPosition;
-        }
-
-        // Subscribe to game restart
-        if (GameManager.instance != null)
-        {
-            GameManager.instance.gameRestart.AddListener(ResetBox);
-        }
-    }
-
-    void OnDestroy()
-    {
-        if (GameManager.instance != null)
-        {
-            GameManager.instance.gameRestart.RemoveListener(ResetBox);
+            SpriteRenderer sr = powerupAnimator.GetComponent<SpriteRenderer>();
+            if (sr != null)
+            {
+                sr.enabled = false;
+            }
         }
     }
-
-    public void ResetBox()
+    
+    public void GameRestart()
     {
         StopAllCoroutines();
         isUsed = false;
 
-        // 1. Reset the Question Box itself
         Animator boxAnim = GetComponent<Animator>();
         if (boxAnim != null)
         {
@@ -133,7 +119,6 @@ public class QuestionBoxPowerupController : MonoBehaviour, IPowerupController
         }
         transform.localPosition = originalLocalPos;
 
-        // 2. Reactivate and reset the Powerup script object
         if (powerup != null)
         {
             powerup.gameObject.SetActive(true);
@@ -142,15 +127,17 @@ public class QuestionBoxPowerupController : MonoBehaviour, IPowerupController
 
             if (powerup is MagicMushroomPowerup mushroom)
             {
-                mushroom.ResetPowerup();
+                mushroom.ResetPowerup(); 
+                // NOTE: If you also renamed ResetPowerup to GameRestart in MagicMushroomPowerup, 
+                // change the line above to: mushroom.GameRestart();
             }
             else if (powerup is CoinPowerup coin)
             {
-                coin.ResetPowerup();
+                // CHANGED: This now correctly calls GameRestart() instead of ResetPowerup()
+                coin.GameRestart();
             }
             else
             {
-                // Reset physics in case it's a generic powerup
                 Rigidbody2D pRb = powerup.GetComponent<Rigidbody2D>();
                 if (pRb != null)
                 {
@@ -165,16 +152,14 @@ public class QuestionBoxPowerupController : MonoBehaviour, IPowerupController
             }
         }
 
-        // 3. Reactivate and re-enable the Sprite & Animator object
         if (powerupAnimator != null)
         {
             powerupAnimator.gameObject.SetActive(true);
             powerupAnimator.transform.localPosition = animatorLocalPos;
-            powerupAnimator.enabled = true; // In case the mushroom script disabled it
-            powerupAnimator.Rebind();       // Return animation back to idle
+            powerupAnimator.enabled = true; 
+            powerupAnimator.Rebind();       
             powerupAnimator.Update(0f);
 
-            // Also reset physics if attached directly to the animator object
             Rigidbody2D aRb = powerupAnimator.GetComponent<Rigidbody2D>();
             if (aRb != null)
             {
@@ -186,6 +171,11 @@ public class QuestionBoxPowerupController : MonoBehaviour, IPowerupController
             {
                 aCol.enabled = false;
             }
+            SpriteRenderer aSr = powerupAnimator.GetComponent<SpriteRenderer>();
+            if (aSr != null)
+            {
+                aSr.enabled = false;
+            }
         }
     }
 
@@ -195,14 +185,12 @@ public class QuestionBoxPowerupController : MonoBehaviour, IPowerupController
         {
             isUsed = true;
 
-            // Trigger disabled block animation on the box
             Animator boxAnim = GetComponent<Animator>();
             if (boxAnim != null)
             {
                 boxAnim.SetTrigger("spawned");
             }
 
-            // Trigger rising animation on the powerup
             if (powerupAnimator != null)
             {
                 SpriteRenderer sr = powerupAnimator.GetComponent<SpriteRenderer>();
@@ -211,7 +199,6 @@ public class QuestionBoxPowerupController : MonoBehaviour, IPowerupController
                 powerupAnimator.SetTrigger("spawned");
             }
 
-            // For mushrooms, delay physical movement until rising animation completes (0.75s)
             if (powerup is MagicMushroomPowerup)
             {
                 StartCoroutine(SpawnPowerupRoutine(0.75f));
@@ -221,7 +208,6 @@ public class QuestionBoxPowerupController : MonoBehaviour, IPowerupController
                 powerup.SpawnPowerup();
             }
 
-            // Play coin chime
             AudioClip clipToPlay = coinSound != null ? coinSound : (audioSource != null ? audioSource.clip : null);
             if (clipToPlay != null && audioSource != null)
             {
@@ -230,8 +216,6 @@ public class QuestionBoxPowerupController : MonoBehaviour, IPowerupController
         }
     }
 
-    // Only Mario bumping the box from below should spawn the powerup,
-    // landing on top of it must not (same check as BrickPowerupController)
     private bool HitFromBelow(Collision2D other)
     {
         foreach (ContactPoint2D contact in other.contacts)
