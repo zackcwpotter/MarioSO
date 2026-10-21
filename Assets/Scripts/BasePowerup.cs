@@ -37,6 +37,16 @@ public abstract class BasePowerup : MonoBehaviour, IPowerup
         Destroy(this.gameObject);
     }
 
+    // Lets Mario's state machines (Mario FSM and buff FSM) react to this powerup
+    protected void SendToStateControllers(MonoBehaviour target)
+    {
+        if (target == null) return;
+        foreach (PowerupStateController controller in target.GetComponents<PowerupStateController>())
+        {
+            controller.SetPowerup(powerupType);
+        }
+    }
+
     // 2. abstract methods, must be implemented by derived classes
     public abstract void SpawnPowerup();
     public abstract void ApplyPowerup(MonoBehaviour i);

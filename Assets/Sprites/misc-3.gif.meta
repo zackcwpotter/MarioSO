@@ -813,7 +813,7 @@ TextureImporter:
         width: 41
         height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -822,6 +822,72 @@ TextureImporter:
       bones: []
       spriteID: 62bb42b19c2385542be7d865c3c4bf3f
       internalID: -498195319
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fireball
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 298
+        width: 8
+        height: 8
+      alignment: 9
+      pivot: {x: 0.5331285, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1943079344bd1ad4d8bc1d695d088616
+      internalID: -1005500931
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: flower
+      rect:
+        serializedVersion: 2
+        x: 90
+        y: 1172
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 14a11cea11c2ed04994fcd8ea5554695
+      internalID: -1144317205
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: star
+      rect:
+        serializedVersion: 2
+        x: 53
+        y: 1133
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aa03166e2a3b2174ea01b4d0b4499b34
+      internalID: 1770861981
       vertices: []
       indices: 
       edges: []
@@ -853,7 +919,9 @@ TextureImporter:
       coin-spin3: -1961781012
       coin-spin4: -1637606393
       coin_spin1: -1736433935
+      fireball: -1005500931
       flat_goomba: 153031826
+      flower: -1144317205
       goomba: 2021442919
       misc-3_0: -293349007
       misc-3_1: 436808072
@@ -870,6 +938,7 @@ TextureImporter:
       question3: -1441620133
       question_blink: 545259248
       small_hill: -1762736478
+      star: 1770861981
       top_brick: -361989001
       used_box: -2030686666
   mipmapLimitGroupName: 
