@@ -17,9 +17,16 @@ public class GameManager : MonoBehaviour, IPowerupApplicable
     public AudioMixerSnapshot normalSnapshot;
     public AudioMixerSnapshot sadGameOverSnapshot;
 
+    [Tooltip("Tick in the first level only. Later levels keep the score from the previous level.")]
+    public bool resetScoreOnStart = true;
+
+    // Score when this level started; restarting the level goes back to it
+    private int scoreAtLevelStart;
+
     void Start()
     {
-        gameScore.Value = 0; 
+        if (resetScoreOnStart) gameScore.Value = 0;
+        scoreAtLevelStart = gameScore.Value;
         
         // Broadcasts to the OnGameStart event in the inspector
         gameStart.Invoke(); 
@@ -34,9 +41,14 @@ public class GameManager : MonoBehaviour, IPowerupApplicable
         SceneManager.activeSceneChanged += SceneSetup;
     }
 
+    void OnDestroy()
+    {
+        SceneManager.activeSceneChanged -= SceneSetup;
+    }
+
     public void GameRestart()
     {
-        gameScore.Value = 0;
+        gameScore.Value = scoreAtLevelStart;
         
         // Broadcasts to the OnUpdateScore event in the inspector
         updateScore.Invoke(); 

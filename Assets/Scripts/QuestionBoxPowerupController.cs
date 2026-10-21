@@ -136,6 +136,10 @@ public class QuestionBoxPowerupController : MonoBehaviour, IPowerupController
                 // CHANGED: This now correctly calls GameRestart() instead of ResetPowerup()
                 coin.GameRestart();
             }
+            else if (powerup is CollectiblePowerup collectible)
+            {
+                collectible.GameRestart();
+            }
             else
             {
                 Rigidbody2D pRb = powerup.GetComponent<Rigidbody2D>();

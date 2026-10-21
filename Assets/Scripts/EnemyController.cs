@@ -77,6 +77,14 @@ public class EnemyController : MonoBehaviour
         if (!other.CompareTag("Player") || stomped)
             return;
 
+        // Starman: touching the enemy from any side defeats it
+        BuffStateController buff = other.GetComponent<BuffStateController>();
+        if (buff != null && buff.IsInvincible)
+        {
+            Defeat();
+            return;
+        }
+
         Rigidbody2D marioBody = other.GetComponent<Rigidbody2D>();
 
         bool marioIsAbove = other.transform.position.y > transform.position.y + 0.3f;
@@ -95,6 +103,14 @@ public class EnemyController : MonoBehaviour
             // ADDED: If Mario hits from the side, trigger the damage event
             damagePlayer.Invoke();
         }
+    }
+
+    // Used when the enemy is killed by something other than a stomp (e.g. a fireball)
+    public void Defeat()
+    {
+        if (stomped) return;
+        Stomp();
+        increaseScore.Invoke(1);
     }
 
     private void Stomp()

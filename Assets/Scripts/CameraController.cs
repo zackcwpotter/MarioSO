@@ -6,6 +6,8 @@ public class CameraController : MonoBehaviour
 {
     public Transform player;   // Mario's Transform
     public Transform endLimit; // Marks the right end of the level
+    [Tooltip("Untick to keep the camera still (e.g. for a level that fits on one screen)")]
+    public bool followPlayer = true;
 
     private float offset;            
     private float startX;            
@@ -31,6 +33,8 @@ public class CameraController : MonoBehaviour
 
     void Update()
     {
+        if (!followPlayer) return;
+
         float desiredX = player.position.x + offset;
         float clampedX = Mathf.Clamp(desiredX, startX, endX);
 

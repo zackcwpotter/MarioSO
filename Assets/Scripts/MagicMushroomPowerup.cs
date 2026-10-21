@@ -249,10 +249,7 @@ public class MagicMushroomPowerup : BasePowerup
 
     public override void ApplyPowerup(MonoBehaviour i)
     {
-        if (i is PlayerController player)
-        {
-            player.MakeSuperMario();
-        }
+        SendToStateControllers(i);
         Debug.Log("Magic Mushroom consumed by Mario!");
     }
 

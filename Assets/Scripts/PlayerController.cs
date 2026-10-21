@@ -93,8 +93,20 @@ public class PlayerController : MonoBehaviour, IPowerupApplicable
         // because the Goomba now handles detecting the hit and triggering DamageMario!
     }
 
-    // ADDED: This public method allows the SimpleGameEventListener to tell Mario to die
+    // Called by the On Damage Player event; Mario's state machine decides what the hit does
     public void DamageMario()
+    {
+        if (!alive) return;
+
+        MarioStateController stateController = GetComponent<MarioStateController>();
+        if (stateController != null)
+            stateController.SetPowerup(PowerupType.Damage);
+        else
+            Die();
+    }
+
+    // Called by the DeadMario state (KillMario action)
+    public void Die()
     {
         if (!alive) return;
 
@@ -186,25 +198,5 @@ public class PlayerController : MonoBehaviour, IPowerupApplicable
     {
         // Passes Mario (this) back to the powerup script so it can apply its effect
         i.ApplyPowerup(this);
-    }
-
-    public void MakeSuperMario()
-    {
-        Debug.Log("Mario is now Super Mario!");
-        StopCoroutine("ScaleMario");
-        StartCoroutine(ScaleMario(new Vector3(1.4f, 1.4f, 1f), 0.2f));
-    }
-
-    private IEnumerator ScaleMario(Vector3 targetScale, float duration)
-    {
-        Vector3 initial = transform.localScale;
-        float elapsed = 0f;
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            transform.localScale = Vector3.Lerp(initial, targetScale, elapsed / duration);
-            yield return null;
-        }
-        transform.localScale = targetScale;
     }
 }
